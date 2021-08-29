@@ -12,16 +12,21 @@ const AssetWashDocs = require('../models').AssetWashOutDoc;
 const YardsMst = require('../models').YardsMst;
 const ClientMst = require('../models').ClientMst;
 const TicketTxns = require('../models').TicketTxns;
+const Posts = require('../models').Posts;
+
 module.exports = {
-    async saveAsset(req, res) {
+    async save(req, res) {
         try {
-            await Asset.create({
-                ...req.body,
-                client_id: req.body.client_id,
-                created_by: req.body.user_id,
+            const {title,description,excerpt,user_id} = req.body;
+            const post=await Posts.create({
+                title:title,
+                description:description,
+                excerpt:excerpt,
+                created_by: user_id,
             });
             return res.status(200).send({
                 success: true,
+                data: post,
                 message: 'Added asset',
             });
         } catch (e) {
@@ -32,100 +37,15 @@ module.exports = {
         }
     },
 
-    async searchAsset(req, res) {
+    async detail(req, res) {
         try {
-            let statusTabs = await TabParameters.findAll({
-                where: {
-                    param_key: ['asset_txns_status'],
-                    param_name: ['Checkout'],
-                },
-                attributes: ['param_value'],
-                raw: true,
-            });
-            let statuses = statusTabs.map((val, index) => {
-                return val.param_value;
-            });
-
-            // Fetched all the asset txns where, last asset txns record is in checkout state.
-            const assetIds = await AssetTxns.findAll({
-                where: {
-                    client_cust_id: req.params.custId,
-                    client_id: req.body.client_id,
-                    status: {
-                        [Op.in]: statuses,
-                    },
-                    asset_txns_id:{
-                        [Op.in]: sequelize.literal(`(
-                            SELECT MAX(asset_txns_id) 
-                            FROM assets_txns inner_table 
-                            WHERE AssetTxns.asset_id=inner_table.asset_id
-                        )`)
-                    }                    
-                },
-                attributes: [
-                    [
-                        sequelize.literal('GROUP_CONCAT(DISTINCT asset_id)'),
-                        'allowed_assets',
-                    ],
-                ],
-                raw: true,
-            });
-            let allowed_assets = [];
-            console.log(assetIds);
-            if (assetIds[0].allowed_assets != null) {
-                allowed_assets = assetIds[0].allowed_assets.split(',');
-            }
-            // const ticketAssetIds = await TicketMst.findAll({
-            //     where: {
-            //         client_cust_id: req.params.custId,
-            //         client_id: req.body.client_id,
-            //         status: {
-            //             [Op.in]: statuses,
-            //         },
-            //     },
-            //     attributes: [
-            //         [
-            //             sequelize.literal('GROUP_CONCAT(DISTINCT asset_id)'),
-            //             'allowed_assets',
-            //         ],
-            //     ],
-            //     raw: true,
-            // });
-            // let allowed_assets_for_ticket = [];
-            // if (ticketAssetIds[0].allowed_assets != null) {
-            //     allowed_assets_for_ticket = ticketAssetIds[0].allowed_assets.split(',');
-            // }
-            // console.log(ticketAssetIds);
-            // allowed_assets = lodash.intersectionWith(allowed_assets_for_ticket, allowed_assets, lodash.isEqual);
-            // console.log('allowed_assets:' + allowed_assets);
-
-
-            const assetList = await Asset.findAll({
-                where: {
-                    client_cust_id: req.params.custId,
-                    client_id: req.body.client_id,
-                    [Op.and]: [{
-                        asset_id: {
-                            [Op.in]: allowed_assets,
-                        },
-                        // asset_id: {
-                        //   [Op.in]: allowed_assets_for_ticket,
-                        // },
-                    }],
-                },
-                attributes: ['asset_id', 'equipment_no'],
-                include: [{
-                    model: TabParameters,
-                    as: 'equipment_type_details',
-                    attributes: ['param_name', 'param_value'],
-                }],
-                raw: true,
-            });
+            const id=req.body.id;
+            const details = await Posts.findByPk(id);
 
             return res.status(200).send({
                 success: true,
-                message: 'list of assets',
-                data: assetList,
+                message: 'Post details.',
+                data:details,
             });
         } catch (e) {
             return res.status(400).send({
