@@ -47,8 +47,9 @@ module.exports = {
       });
   },
 
-  async update(req, res) {
+  async update(req, res, next) {
     let {id,name,email,password} = req.body;
+    console.log(req.body);
     if (password) {
       const salt = bcrypt.genSaltSync(8);
       password = bcrypt.hashSync(password, salt);
@@ -70,7 +71,11 @@ module.exports = {
       return res.status(200).json({
         message: 'User updated successfully.',
         success: true,
-        data: userdata,
+        data: {
+          name:name,
+          email:email,
+          password:password
+        },
       });
     } catch (err) {
       response.success = false;
@@ -90,7 +95,7 @@ module.exports = {
         where: {
           [Op.or]: [
             { username: email },
-            email.length >= 6 && { email: email },
+            { email: email },
           ],
         },
       });
@@ -176,25 +181,6 @@ module.exports = {
     }
   },
 
-  async imageUpload(req, res) {
-    try {
-      if (req.file.location == undefined) {
-        throw Error('File could not be uploaded.');
-      }
-      res.status(200).json({
-        success: true,
-        data: { filepath: req.file.location },
-        message: 'Image Uploaded.',
-      });
-    } catch (error) {
-      res.status(400).json({
-        success: false,
-        data: [],
-        message: error.message,
-      });
-    }
-  },
-
   async getUserList(req, res) {
     try {
       const list = await Users.findAll({
@@ -220,7 +206,7 @@ module.exports = {
 
   async changeStatus(req, res) {
     try {
-      const {id,status} = req.query;
+      const {id,status} = req.body;
       await Users.update(
         {
           active: status
@@ -246,9 +232,8 @@ module.exports = {
   },
 
   async detail(req, res, next) {
-    const {id}=req.params;
-    Users.findOne({
-      where: { id: id },
+    const id=req.params.id===undefined ? req.body.id : req.params.id;
+    Users.findByPk(id,{
       attributes: [
         'id',
         'username',
@@ -281,9 +266,18 @@ module.exports = {
 
   async changePassword(req, res) {
     try {
-      const {id,password} = req.body;
+      const {id,old_password,new_password} = req.body;
+
+      const user = await Users.findByPk(id);
+
+      let same = await bcrypt.compareSync(old_password, user.password);
+
+      if(!same){
+        throw Error("The old password id wrong.");
+      }
+
       const salt = bcrypt.genSaltSync(8);
-      const hash = bcrypt.hashSync(password, salt);
+      const hash = bcrypt.hashSync(new_password, salt);
       await Users.update(
         {
           password: hash,
@@ -297,7 +291,7 @@ module.exports = {
 
       res
         .status(200)
-        .send({ message: 'Changed password success', success: true,data:[] });
+        .send({ message: 'Password Changed.', success: true,data:[] });
     } catch (e) {
       response.success = false;
       response.data = [];

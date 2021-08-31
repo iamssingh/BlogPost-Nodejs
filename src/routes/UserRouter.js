@@ -6,6 +6,7 @@ const { upload, deleteimage } = require('../s3Bucket/s3Upload');
 const {
   loginValidation,
   registerValidation,
+  changePasswordValidation
 } = require('../validators/UserValidator');
 
 router.get('/', async (req, res) => {
@@ -19,13 +20,8 @@ router
     '/user/signup',
     UserController.userSignUp
   )
-  .get('/user/:id', authMiddleware, UserController.detail)
+  .get('/user/:id?', authMiddleware, UserController.detail)
   .patch('/user/update', authMiddleware, UserController.update)
-  .post(
-    '/image/upload',
-    [authMiddleware, upload.single('file')],
-    UserController.imageUpload
-  )
   .patch(
     '/user/account/ChangeStatus',
     authMiddleware,
@@ -33,7 +29,7 @@ router
   )
   .patch(
     '/user/changePassword',
-    authMiddleware,
+    [authMiddleware,changePasswordValidation],
     UserController.changePassword
   )
 

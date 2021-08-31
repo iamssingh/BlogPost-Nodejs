@@ -19,14 +19,14 @@ const authMiddleware = async (req, res, next) => {
       user = await Users.findAll({
         where: [
           {
-            id: decoded.data.id,
+            id: decoded.data.user_id,
             api_token: token,
           },
         ],
       });
 
       if (user.length > 0) {
-        req.body.id = decoded.data.id;
+        req.body.id = decoded.data.user_id;
         req.body.role = decoded.data.role;
         return next();
       } else {
