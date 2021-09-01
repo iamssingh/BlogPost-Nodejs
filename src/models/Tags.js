@@ -31,8 +31,8 @@ module.exports = (sequelize, DataTypes) => {
             primaryKey: true,
             autoIncrement: true,
         },
-        title: { type: DataTypes.STRING, allowNull: false },
-        details: { type: DataTypes.TEXT, allowNull: false },
+        title: { type: DataTypes.STRING, allowNull: false,unique: true },
+        details: { type: DataTypes.TEXT, allowNull: true },
         updated_by: { type: DataTypes.INTEGER, allowNull: true },
         created_by: { type: DataTypes.INTEGER, allowNull: false },
         updated_at: { type: DataTypes.DATE, allowNull: true },
@@ -41,12 +41,10 @@ module.exports = (sequelize, DataTypes) => {
         sequelize,
         modelName: 'Tags',
         underscored: true,
-        paranoid: true,
         timestamps: true,
 
         createdAt: 'created_at',
         updatedAt: 'updated_at',
-        deletedAt: 'deleted_at',
         tableName: 'tags',
     });
     return Tags;

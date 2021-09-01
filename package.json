@@ -1,5 +1,5 @@
 {
-    "name": "washtrax",
+    "name": "BlogPost",
     "version": "1.0.0",
     "description": "",
     "main": "index.js",
@@ -12,7 +12,7 @@
     "license": "ISC",
     "dependencies": {
         "@sendgrid/mail": "^7.4.2",
-        "aws-sdk": "^2.824.0",
+        "aws-sdk": "^2.980.0",
         "bcrypt": "^5.0.1",
         "express": "^4.17.1",
         "html-pdf-node": "^1.0.7",
@@ -24,6 +24,7 @@
         "multer-s3": "^2.9.0",
         "mysql2": "^2.2.5",
         "sequelize": "^6.3.5",
+        "slugify": "^1.6.0",
         "xlsx": "^0.17.0"
     },
     "devDependencies": {

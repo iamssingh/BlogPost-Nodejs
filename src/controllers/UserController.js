@@ -27,36 +27,15 @@ module.exports = {
     return token;
   },
 
-  async updateToken(id, token, callback) {
-    Users.findByPk(id)
-      .then((user) => {
-        if (!user) {
-          throw new Error('User not found');
-        }
-
-        user
-          .update({
-            api_token: token,
-          })
-          .then(() => {
-            callback({ ...user.dataValues });
-          });
-      })
-      .catch((error) => {
-        throw new Error(error);
-      });
-  },
-
   async update(req, res, next) {
-    let {id,name,email,password} = req.body;
-    console.log(req.body);
+    let {user_id,name,email,password} = req.body;
     if (password) {
       const salt = bcrypt.genSaltSync(8);
       password = bcrypt.hashSync(password, salt);
     }
 
     try {
-      const userdata = await Users.update(
+      await Users.update(
         {
           name:name,
           email:email,
@@ -64,7 +43,7 @@ module.exports = {
         },
         {
           where: {
-            id:id,
+            id:user_id,
           },
         }
       );
@@ -121,7 +100,6 @@ module.exports = {
       response.message = 'success';
       response.data = user;
       res.status(200).send(response);
-      // await module.exports.updateToken(user.user_id, user.api_token, UpdatedUserData);
     } catch (err) {
       response.message = err.message;
       res.status(400).send(response);
@@ -206,14 +184,14 @@ module.exports = {
 
   async changeStatus(req, res) {
     try {
-      const {id,status} = req.body;
+      const {user_id,status} = req.body;
       await Users.update(
         {
           active: status
         },
         {
           where: {
-            id: id
+            id: user_id
           },
         }
       );
@@ -232,7 +210,7 @@ module.exports = {
   },
 
   async detail(req, res, next) {
-    const id=req.params.id===undefined ? req.body.id : req.params.id;
+    const id=req.params.id===undefined ? req.body.user_id : req.params.id;
     Users.findByPk(id,{
       attributes: [
         'id',
@@ -266,9 +244,9 @@ module.exports = {
 
   async changePassword(req, res) {
     try {
-      const {id,old_password,new_password} = req.body;
+      const {user_id,old_password,new_password} = req.body;
 
-      const user = await Users.findByPk(id);
+      const user = await Users.findByPk(user_id);
 
       let same = await bcrypt.compareSync(old_password, user.password);
 
@@ -284,7 +262,7 @@ module.exports = {
         },
         {
           where: {
-            id: id
+            id: user_id
           },
         }
       );

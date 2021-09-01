@@ -1,53 +1,28 @@
 const express = require('express');
 const router = express.Router();
 const TagController = require('../controllers').TagController;
-// const { authMiddleware } = require('../middleware/auth');
-// const { idValidation } = require('../validators/validator');
-// const {
-//   addServiceValidation,
-//   updateServiceValidation,
-//   deleteServiceValidation
-// } = require('../validators/serviceValidator');
+const { authMiddleware } = require('../middleware/auth');
+const {
+  tagAddValidator,
+  tagUpdateValidator
+} = require('../validators/TagValidator');
 
-// router.get('/service/list', [authMiddleware], TagController.list);
-// router.get(
-//   '/get/certificate/services',
-//   [authMiddleware],
-//   TagController.getWashoutCertificateClientMstServices
-// );
-// router.get(
-//   '/service/list-for-selectbox/:status?',
-//   [authMiddleware],
-//   TagController.allservicesList
-// );
+router.get('/tags', [authMiddleware], TagController.list);
 
-// router.get(
-//   '/service/details/:client_id',
-//   [authMiddleware],
-//   TagController.details
-// );
+router.post(
+  '/tag/add',
+  [authMiddleware,tagAddValidator],
+  TagController.add
+);
+router.get(
+  '/tag/:id',
+  [authMiddleware],
+  TagController.detail
+);
 
-// router.post(
-//   '/service/add',
-//   [authMiddleware, addServiceValidation],
-//   TagController.serviceAdd
-// );
-
-// router.patch(
-//   '/service/changeStatus',
-//   authMiddleware,
-//   TagController.changeServiceStatus
-// );
-
-// router.patch(
-//   '/service/update',
-//   [authMiddleware, updateServiceValidation],
-//   TagController.update
-// );
-
-// router.delete(
-//   '/service/delete/:id',
-//   [authMiddleware],
-//   TagController.delete
-// );
+router.patch(
+  '/tag/update',
+  [authMiddleware,tagUpdateValidator],
+  TagController.update
+);
 module.exports = router;

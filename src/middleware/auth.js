@@ -9,7 +9,7 @@ const response = {
 };
 const authMiddleware = async (req, res, next) => {
   try {
-    const token = req.header('Authorization').replace('Bearer ', '');
+    const token = req.header('Authorization')?.replace('Bearer ', '');
     let user;
     jwt.verify(token, process.env.JWT_SECRET, async (err, decoded) => {
       if (err) {
@@ -26,7 +26,7 @@ const authMiddleware = async (req, res, next) => {
       });
 
       if (user.length > 0) {
-        req.body.id = decoded.data.user_id;
+        req.body.user_id = decoded.data.user_id;
         req.body.role = decoded.data.role;
         return next();
       } else {

@@ -246,7 +246,7 @@ module.exports = {
       return res.status (200).json ({...response, status: 200});
     } catch (err) {
       response.success = false;
-      response.message = err;
+      response.message = err.message;
       return res.status (400).json (err.message);
     }
   },
@@ -271,7 +271,7 @@ module.exports = {
       return res.status (200).json ({...response, status: 200});
     } catch (err) {
       response.success = false;
-      response.message = err;
+      response.message = err.message;
       return res.status (400).json (err.message);
     }
   },
