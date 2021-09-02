@@ -9,12 +9,12 @@ module.exports = (sequelize, DataTypes) => {
                 as: 'created_by_user',
                 primaryKey: 'id',
             });
-            // Posts.belongsToMany(models.Tags, {
-            //     through: PostTags,
-            //     foreignKey: 'id',
-            //     as: 'tags',
-            //     // primaryKey: 'post_id',
-            // });
+            Posts.belongsToMany(models.Tags, {
+                through: models.PostTags,
+                // foreignKey: 'id',
+                as: 'tags',
+                uniqueKey: 'post_id',
+            });
         }
     }
     Posts.init({

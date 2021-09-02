@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Aug 31, 2021 at 02:55 PM
+-- Generation Time: Sep 02, 2021 at 08:41 AM
 -- Server version: 10.4.14-MariaDB
 -- PHP Version: 7.2.34
 
@@ -84,6 +84,14 @@ CREATE TABLE `posts` (
   `deleted_by` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+--
+-- Dumping data for table `posts`
+--
+
+INSERT INTO `posts` (`id`, `title`, `description`, `slug`, `active`, `created_at`, `updated_at`, `deleted_at`, `created_by`, `updated_by`, `deleted_by`) VALUES
+(6, 'let\'s talk about javascript', 'In a nutshell, how does the index work? We pull data from YouTube, GitHub, Stack Overflow, Google AdWords, Google Search, Indeed, Reddit and Dice, then calculate the median popularity of a technology, versus its peers, across those data sources.', 'let\'s-talk-about-javascript', 1, '2021-09-01 07:16:41', '2021-09-01 07:16:41', NULL, 1, NULL, NULL),
+(7, 'Origin of javascript', 'In a nutshell, how does the index work? We pull data from YouTube, GitHub, Stack Overflow, Google AdWords, Google Search, Indeed, Reddit and Dice, then calculate the median popularity of a technology, versus its peers, across those data sources.', 'origin-of-javascript', 1, '2021-09-01 07:18:10', '2021-09-01 07:18:10', NULL, 1, NULL, NULL);
+
 -- --------------------------------------------------------
 
 --
@@ -96,6 +104,17 @@ CREATE TABLE `post_tags` (
   `tag_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+--
+-- Dumping data for table `post_tags`
+--
+
+INSERT INTO `post_tags` (`id`, `post_id`, `tag_id`) VALUES
+(4, 6, 9),
+(5, 6, 10),
+(6, 6, 11),
+(7, 7, 9),
+(8, 7, 10);
+
 -- --------------------------------------------------------
 
 --
@@ -105,12 +124,22 @@ CREATE TABLE `post_tags` (
 CREATE TABLE `tags` (
   `id` int(11) NOT NULL,
   `title` varchar(255) NOT NULL,
-  `details` text NOT NULL,
+  `details` text DEFAULT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime DEFAULT NULL,
   `created_by` int(11) NOT NULL,
   `updated_by` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `tags`
+--
+
+INSERT INTO `tags` (`id`, `title`, `details`, `created_at`, `updated_at`, `created_by`, `updated_by`) VALUES
+(1, 'php', 'PHP is a programming language. This is used for we development.', '2021-09-01 06:25:30', '2021-09-01 06:25:30', 1, NULL),
+(9, 'JS', 'JavaScript, often abbreviated as JS, is a programming language that conforms to the ECMAScript specification. JavaScript is high-level, often just-in-time compiled, and multi-paradigm. It has curly-bracket syntax, dynamic typing, prototype-based object-orientation, and first-class functions.', '2021-09-01 06:29:06', '2021-09-01 06:33:37', 1, 1),
+(10, 'programming', 'Computer programming is the process of designing and building an executable computer program to accomplish a specific computing result or to perform a specific task.', '2021-09-01 07:05:35', '2021-09-01 07:05:35', 1, NULL),
+(11, 'coding', 'Coding is basically the computer language used to develop apps, websites, and software. Without it, we’d have none of the most popular technology we’ve come to rely on such as Facebook, our smartphones, the browser we choose to view our favorite blogs, or even the blogs themselves. It all runs on code.', '2021-09-01 07:06:10', '2021-09-01 07:06:10', 1, NULL);
 
 -- --------------------------------------------------------
 
@@ -138,7 +167,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `email`, `password`, `profile_pic`, `role`, `active`, `api_token`, `username`, `created_at`, `updated_at`, `deleted_at`) VALUES
-(1, 'Suraj Singh', 'ssingh@gmail.com', '$2b$08$7KVhYtTE7sK/hOxe3WccnesIHHx16PUEFE159EwuTpTYQs8A3HKbi', 'uploads/65f422a13e0721931adfe779cda368c2.jpeg', 'user', 1, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7InVzZXJfaWQiOjEsInVzZXJuYW1lIjoic3NpbmdoIn0sImlhdCI6MTYzMDQxNDUxMn0.xaiQDnGZRs-MA_Fb_osxTHEH_THYL2KLWeGi1IavYwI', 'ssingh', '2021-08-28 09:29:03', '2021-08-31 12:55:12', NULL);
+(1, 'Suraj Singh', 'ssingh@gmail.com', '$2b$08$7KVhYtTE7sK/hOxe3WccnesIHHx16PUEFE159EwuTpTYQs8A3HKbi', 'uploads/65f422a13e0721931adfe779cda368c2.jpeg', 'user', 1, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7InVzZXJfaWQiOjEsInVzZXJuYW1lIjoic3NpbmdoIn0sImlhdCI6MTYzMDU1NzA0M30.2CZIPujmlcfUKC_63xy6uKS0mT-qZTI0WEyaEXQfNqI', 'ssingh', '2021-08-28 09:29:03', '2021-09-02 04:30:43', NULL);
 
 --
 -- Indexes for dumped tables
@@ -172,7 +201,8 @@ ALTER TABLE `post_tags`
 -- Indexes for table `tags`
 --
 ALTER TABLE `tags`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `title` (`title`);
 
 --
 -- Indexes for table `users`
@@ -202,19 +232,19 @@ ALTER TABLE `notifications`
 -- AUTO_INCREMENT for table `posts`
 --
 ALTER TABLE `posts`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `post_tags`
 --
 ALTER TABLE `post_tags`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `tags`
 --
 ALTER TABLE `tags`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `users`

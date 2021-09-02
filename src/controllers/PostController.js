@@ -1,4 +1,5 @@
 const Posts = require('../models').Posts;
+const Tags = require('../models').Tags;
 const slugify = require('slugify');
 module.exports = {
     async add(req, res) {
@@ -56,23 +57,22 @@ module.exports = {
     },
 
     async list(req, res) {
-        const {page,limit,tags}=req.query;
-        const where={};
-
-        // if(tags!==undefined) {
-        //     PostTags.findAll({
-        //         attributes:['id']
-        //     });
-        // }
+        let {page,limit,tags,params}=req.query;
+        const where={
+            active:1
+        };
+        params=(params!==undefined?params.split(','):['id','title','description','slug','created_at']);
+        const innerwhere=(tags!==undefined ? { id:tags.split(',')} : {});
 
         Posts.findAll({
-            attributes:['id','title','description','slug','created_at'],
-            where:{
-                active:1
-            },
-            // include:[{
-            //     model:PostTags,
-            // }]
+            attributes:params,
+            where:where,
+            include:[{
+                model:Tags,
+                as:'tags',
+                attributes:['id','title','details'],
+                where:innerwhere
+            }]
         }).then((data) => {
             res.status(200).send({
                 success: true,

@@ -4,6 +4,12 @@ const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
     class Tags extends Model {
         static associate(models) {
+            Tags.belongsToMany(models.Posts, {
+                through: models.PostTags,
+                // foreignKey: 'id',
+                as: 'posts',
+                uniqueKey: 'tag_id',
+            });
             // Tags.hasOne(models.TabParameters, {
             //     as: 'service_group_name',
             //     sourceKey: 'service_group_id',
